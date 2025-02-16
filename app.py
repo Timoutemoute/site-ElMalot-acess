@@ -143,5 +143,27 @@ def admin_logout():
     flash("Déconnexion réussie !", "success")
     return redirect(url_for('index'))
 
+# Modifier une propriété
+@app.route('/admin/edit_property/<int:property_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_property(property_id):
+    properties = load_properties()
+    property_to_edit = next((p for p in properties if p['id'] == property_id), None)
+    if not property_to_edit:
+        flash("Propriété non trouvée", "error")
+        return redirect(url_for('admin_dashboard'))
+    
+    if request.method == 'POST':
+        # Mettre à jour les données de la propriété
+        property_to_edit['title'] = request.form['title']
+        property_to_edit['description'] = request.form['description']
+        property_to_edit['price'] = float(request.form['price'])
+        save_properties(properties)
+        flash("Propriété modifiée avec succès !", "success")
+        return redirect(url_for('admin_dashboard'))
+    
+    # Afficher le formulaire de modification
+    return render_template('admin_edit_property.html', property=property_to_edit)
+
 if __name__ == '__main__':
     app.run(debug=True)
