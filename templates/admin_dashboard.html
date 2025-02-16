@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Tableau de Bord Administrateur</h1>
+
+<!-- Formulaire pour ajouter une propriété -->
+<h2>Ajouter une propriété</h2>
+<form method="POST" action="{{ url_for('add_property') }}">
+    <label for="title">Titre:</label>
+    <input type="text" id="title" name="title" required>
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+    <label for="price">Prix:</label>
+    <input type="number" id="price" name="price" step="0.01" required>
+    <button type="submit">Ajouter</button>
+</form>
+
+<!-- Liste des propriétés -->
+<h2>Propriétés</h2>
+<ul>
+    {% for property in properties %}
+    <li>
+        <strong>{{ property.title }}</strong> - {{ property.price }} €
+        <p>{{ property.description }}</p>
+        <form method="POST" action="{{ url_for('delete_property', property_id=property.id) }}">
+            <button type="submit">Supprimer</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+
+<!-- Formulaire pour créer un nouvel utilisateur admin -->
+<h2>Créer un nouvel administrateur</h2>
+<form method="POST" action="{{ url_for('create_user') }}">
+    <label for="username">Nom d'utilisateur:</label>
+    <input type="text" id="username" name="username" required>
+    <label for="password">Mot de passe:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Créer</button>
+</form>
+
+<a href="{{ url_for('admin_logout') }}">Déconnexion</a>
+{% endblock %}
