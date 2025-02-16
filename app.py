@@ -10,11 +10,20 @@ app.secret_key = 'votre_cle_secrete'  # Clé secrète pour gérer les sessions
 # Chemin vers le fichier JSON
 DATA_FILE = os.path.join('data', 'properties.json')
 
+# Initialiser le fichier properties.json
+def init_properties_file():
+    if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'w') as file:
+            json.dump([], file, indent=4)
+
 # Charger les propriétés depuis le fichier JSON
 def load_properties():
     if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as file:
-            return json.load(file)
+        try:
+            with open(DATA_FILE, 'r') as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            return []
     return []
 
 # Sauvegarder les propriétés dans le fichier JSON
@@ -94,6 +103,7 @@ def edit_property(property_id):
     if not property_to_edit:
         flash("Propriété non trouvée", "error")
         return redirect(url_for('admin_dashboard'))
+    
     if request.method == 'POST':
         property_to_edit['title'] = request.form['title']
         property_to_edit['description'] = request.form['description']
@@ -101,6 +111,7 @@ def edit_property(property_id):
         save_properties(properties)
         flash("Propriété modifiée avec succès !", "success")
         return redirect(url_for('admin_dashboard'))
+    
     return render_template('admin_edit_property.html', property=property_to_edit)
 
 # Supprimer une propriété
@@ -143,27 +154,6 @@ def admin_logout():
     flash("Déconnexion réussie !", "success")
     return redirect(url_for('index'))
 
-# Modifier une propriété
-@app.route('/admin/edit_property/<int:property_id>', methods=['GET', 'POST'])
-@admin_required
-def edit_property(property_id):
-    properties = load_properties()
-    property_to_edit = next((p for p in properties if p['id'] == property_id), None)
-    if not property_to_edit:
-        flash("Propriété non trouvée", "error")
-        return redirect(url_for('admin_dashboard'))
-    
-    if request.method == 'POST':
-        # Mettre à jour les données de la propriété
-        property_to_edit['title'] = request.form['title']
-        property_to_edit['description'] = request.form['description']
-        property_to_edit['price'] = float(request.form['price'])
-        save_properties(properties)
-        flash("Propriété modifiée avec succès !", "success")
-        return redirect(url_for('admin_dashboard'))
-    
-    # Afficher le formulaire de modification
-    return render_template('admin_edit_property.html', property=property_to_edit)
-
 if __name__ == '__main__':
+    init_properties_file()  # Initialiser le fichier properties.json
     app.run(debug=True)
