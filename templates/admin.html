@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Interface Administrateur</h1>
+<form id="admin-form">
+    <label for="username">Nom d'utilisateur:</label>
+    <input type="text" id="username" name="username" required>
+    <label for="password">Mot de passe:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">Se connecter</button>
+</form>
+<div id="admin-actions" style="display:none;">
+    <h2>Actions Administrateur</h2>
+    <button onclick="addProperty()">Ajouter une propriété</button>
+    <button onclick="editProperty()">Modifier une propriété</button>
+    <button onclick="deleteProperty()">Supprimer une propriété</button>
+</div>
+{% endblock %}
